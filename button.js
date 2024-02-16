@@ -1,99 +1,117 @@
-const game = {
-    time: 30,
-    missed: 0,
-    clicks: 0,
-    timer: null,
-    started: false,
-    targetObj: {},
-    audio: new Audio(`audio/click.mp3`),
-    button: document.getElementById("target"),
-    timeElement: document.getElementById("timer"),
-    container: document.getElementById("gameContainer"),
-    timeContainer: document.getElementById("finalScore"),
+var cps;
+var accuracy;
+var cpsUnCap;
 
-    init() {
-        this.container.style.width = window.innerWidth + 10 + 'px';
-        this.container.style.height = window.innerHeight + 10 + 'px';
-        this.timeElement.innerText = `${this.time} seconds remaining..`;
-        this.button.style.width = '250px';
-        this.button.style.height = '250px';
-        this.button.addEventListener("click", this.handleClick.bind(this));
-        this.container.addEventListener("click", this.handleMiss.bind(this));
-    },
+var time = 3;
+var missed = 0;
+var count = time;
+var started = false;
 
-    startTimer() {
-        this.timer = setInterval(() => {
-            this.time--;
-            this.timeElement.innerText = `${this.time} seconds remaining..`;
-            if (this.time <= 0) {
-                clearInterval(this.timer);
-                this.endGame();
-            }
-        }, 1000);
-    },
+const button = document.getElementById("target");
+const timeElement = document.getElementById("timer");
+const container = document.getElementById("gameContainer");
+const timeContainer = document.getElementById("finalScore")
 
-    handleClick() {
-        if (!this.started) {
-            this.started = true;
-            this.startTimer();
+const audio = new Audio(`audio/click.mp3`);
+
+container.style.width = window.innerWidth + 10 + 'px';
+container.style.height = window.innerHeight + 10 + 'px';
+
+timeElement.innerText = `${time} seconds remaining..`
+
+var targetObj = {};
+var targetProxy = new Proxy(targetObj, {
+    set: function (target, key, value) {
+        if (started) {
+            timer = setInterval(function () {
+                $("#timer").html(`${count-- - 1} seconds remaining..`);
+                if (count == 0) clearInterval(timer);
+            }, 1000);
         }
-
-        this.clicks++;
-
-        if (this.time <= 1) {
-            let cpsUnCap = parseFloat(this.clicks / 30).toString();
-
-            if (cpsUnCap.length > 3) {
-                this.cps = cpsUnCap.slice(0, -13); // Floating point values
-            } else {
-                this.cps = parseInt(cpsUnCap);
-            }
-
-            this.button.removeEventListener("click", this.handleClick);
-            this.button.style.display = 'none';
-
-            this.accuracy = 100 - this.missed * 100 / 100;
-
-            if (this.accuracy < 0) {
-                this.accuracy = 0.01;
-            }
-
-            this.timeContainer.innerText = `
-            You scored ${parseInt(this.clicks)} clicks in 30 seconds.
-            You missed ${this.missed} times.
-            That gives you an accuracy rating of ${this.accuracy}%.
-            as well as ~${this.cps} CPS or ~${parseInt(this.cps * 60)} CPM!`;
-
-            this.button.style.width = '800px';
-            this.button.style.height = '400px';
-            this.button.style.left = '10%';
-            this.button.style.top = '50%';
-            this.button.style.borderRadius = '0px';
-            this.button.style.backgroundColor = '#17BEBB';
-
-            this.timeElement.innerText = `Time's Up!`;
-
-            clearInterval(this.timer);
-        } else {
-            this.button.style.width = `${parseInt(this.button.style.width) - 2.5}px`;
-            this.button.style.height = `${parseInt(this.button.style.height) - 2.5}px`;
-            this.button.innerText = `${this.clicks} Clicks`;
-        }
-
-        
-        this.audio.play();
-
-        this.button.style.left = `${Math.random() * 75}%`;
-        this.button.style.top = `${Math.random() * 75}%`;
-    },
-
-    handleMiss() {
-        this.missed += 1;
-    },
-
-    endGame() {
-        // Logic to end the game and display final score...
+        target[key] = value;
+        return true;
     }
-};
+});
 
-game.init();
+targetProxy.started = 'true'
+
+var clicks = 0
+
+button.style.width = '250px'
+button.style.height = '250px'
+
+let width = parseInt(button.style.width.slice(0,3))
+let height = parseInt(button.style.height.slice(0, 3))
+
+button.addEventListener("click", handleClick);
+container.addEventListener("click", handleMiss);
+
+function handleMiss() {
+    missed +=1;
+}
+
+function handleClick() {
+    if (!started) {
+        started = true
+        targetProxy.started = 'true'
+    }
+
+    clicks++;
+
+    if (count <= 1) {
+        cpsUnCap = parseFloat(clicks / time).toString()
+
+        if (cpsUnCap.length > 3) {
+            cps = cpsUnCap.slice(0, -13) // Fucking floating point values.. 
+        } else {
+            cps = parseInt(cpsUnCap)
+        }
+
+        button.removeEventListener("click", handleClick);
+        button.style.display = 'none'
+
+        accuracy = 100 - missed*100 / 100;
+
+        if (accuracy < 0) {
+            accuracy = 0.01;
+        }
+
+        timeContainer.innerText = `
+        You scored ${parseInt(clicks)} clicks in ${time} seconds.
+
+        You missed ${missed} times.
+
+        That gives you an accuracy rating of ${accuracy}%
+
+        as well as ~${cps} CPS or ~${(parseInt(cps*60))} CPM!`
+
+        button.style.width = '800px';
+        button.style.height = '400px';
+        button.style.left = '10%'
+        button.style.top = '50%'
+        button.style.borderRadius = '0px'
+        button.style.backgroundColor = '#17BEBB';
+
+        timeElement.innerText = `Time's Up!`
+
+        clearInterval(timer);
+    } 
+    
+    else {
+        button.style.width = `${width}px`
+        button.style.height = `${height}px`
+        button.innerText = `${clicks}`;
+    }
+
+    audio.play();
+
+    button.style.left = `${Math.random(1, window.innerWidth)*75}%`
+    button.style.top = `${Math.random(1, window.innerHeight) * 75}%`
+
+    if (width && height > 5) {
+        width-=2.5;
+        height-=2.5;
+    }
+
+
+}
