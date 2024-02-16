@@ -2,7 +2,7 @@ var cps;
 var accuracy;
 var cpsUnCap;
 
-var time = 3;
+var time = 30;
 var missed = 0;
 var count = time;
 var started = false;
