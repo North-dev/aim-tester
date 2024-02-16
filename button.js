@@ -41,7 +41,7 @@ const game = {
         this.clicks++;
 
         if (this.time <= 1) {
-            let cpsUnCap = parseFloat(this.clicks / this.time).toString();
+            let cpsUnCap = parseFloat(this.clicks / 30).toString();
 
             if (cpsUnCap.length > 3) {
                 this.cps = cpsUnCap.slice(0, -13); // Floating point values
