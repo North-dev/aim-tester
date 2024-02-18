@@ -37,17 +37,17 @@ targetProxy.started = 'true'
 
 var clicks = 0
 
-button.style.width = '250px'
-button.style.height = '250px'
+button.style.width = '150px'
+button.style.height = '150px'
 
-let width = parseInt(button.style.width.slice(0,3))
+let width = parseInt(button.style.width.slice(0, 3))
 let height = parseInt(button.style.height.slice(0, 3))
 
 button.addEventListener("click", handleClick);
 container.addEventListener("click", handleMiss);
 
 function handleMiss() {
-    missed +=1;
+    missed += 1;
 }
 
 function handleClick() {
@@ -70,7 +70,7 @@ function handleClick() {
         button.removeEventListener("click", handleClick);
         button.style.display = 'none'
 
-        accuracy = 100 - missed*100 / 100;
+        accuracy = 100 - missed * 100 / 100;
 
         if (accuracy < 0) {
             accuracy = 0.01;
@@ -83,7 +83,29 @@ function handleClick() {
 
         That gives you an accuracy rating of ${accuracy}%
 
-        as well as ~${cps} CPS or ~${(parseInt(cps*60))} CPM!`
+        as well as ~${cps} CPS or ~${(parseInt(cps * 60))} CPM!`
+
+        var shareElement = document.createElement("button");
+        var textBreaker = document.createElement("br");
+        shareElement.textContent = "Share your score";
+
+        shareElement.addEventListener("click", function () {
+
+        let clipboardData = `
+        **━━━━━━━━━━━━━━━━━━━━━━━━━━**\nI scored __${parseInt(clicks)}__ clicks in *${time}* seconds.\nI missed the target **${missed}** times.\nThat gives me an accuracy rating of **${accuracy}**%\nas well as ~**${cps}** CPS or ~**${(parseInt(cps * 60))}** CPM!\nTry for yourself at:\nhttps://north-dev.github.io/aim-tester/\n**━━━━━━━━━━━━━━━━━━━━━━━━━━**`
+
+            navigator.clipboard.writeText(clipboardData)
+                .then(function () {
+                    alert('Score copied to clipboard! (Formatted for discord)');
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    alert('Failed to copy score to clipboard! :/');
+                });
+        });
+
+        timeContainer.appendChild(textBreaker);
+        timeContainer.appendChild(shareElement);
 
         button.style.width = '800px';
         button.style.height = '400px';
@@ -95,8 +117,8 @@ function handleClick() {
         timeElement.innerText = `Time's Up!`
 
         clearInterval(timer);
-    } 
-    
+    }
+
     else {
         button.style.width = `${width}px`
         button.style.height = `${height}px`
@@ -105,12 +127,12 @@ function handleClick() {
 
     audio.play();
 
-    button.style.left = `${Math.random(1, window.innerWidth)*75}%`
+    button.style.left = `${Math.random(1, window.innerWidth) * 75}%`
     button.style.top = `${Math.random(1, window.innerHeight) * 75}%`
 
-    if (width && height > 5) {
-        width-=2.5;
-        height-=2.5;
+    if (width && height > 100) {
+        width--;
+        height--;
     }
 
 
