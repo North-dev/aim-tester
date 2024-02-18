@@ -1,89 +1,86 @@
 var cps;
+var cpm;
 var accuracy;
-var cpsUnCap;
 
-var time = 30;
-var missed = 0;
-var count = time;
-var started = false;
+var game = {
+    clicks:0,
+    misses:0,
+    illegalClicks: 0,
+    fullTime:30,
+    isActive:false
+}
 
-const button = document.getElementById("target");
-const timeElement = document.getElementById("timer");
-const container = document.getElementById("gameContainer");
+var time = game['fullTime'];
+
+const target = document.getElementById("target");
+const gameContainer = document.getElementById("gameContainer");
 const timeContainer = document.getElementById("finalScore")
 
-const audio = new Audio(`audio/click.mp3`);
+const hitAudio = new Audio(`audio/hit.wav`);
+const missAudio = new Audio(`audio/miss.wav`)
 
-container.style.width = window.innerWidth + 10 + 'px';
-container.style.height = window.innerHeight + 10 + 'px';
+gameContainer.style.width = window.innerWidth + 10 + 'px';
+gameContainer.style.height = window.innerHeight + 10 + 'px';
 
-timeElement.innerText = `${time} seconds remaining..`
+$("#timer").html(`PRESS THE TARGET TO BEGIN!`);
 
-var targetObj = {};
-var targetProxy = new Proxy(targetObj, {
-    set: function (target, key, value) {
-        if (started) {
-            timer = setInterval(function () {
-                $("#timer").html(`${count-- - 1} seconds remaining..`);
-                if (count == 0) clearInterval(timer);
-            }, 1000);
-        }
-        target[key] = value;
-        return true;
+var gameTimer = setInterval(() => {
+
+    if (game['isActive']) {
+        $("#timer").html(`${time-- - 1} SECONDS REMAINING`);
     }
-});
 
-targetProxy.started = 'true'
+    if (time == 0) { 
+        clearInterval(gameTimer);
+        game['isActive'] = false; game['clicks']--;
+        handleClick(); // Hacky shit way to do this
+    }
 
-var clicks = 0
+}, 1000);
 
-button.style.width = '150px'
-button.style.height = '150px'
+target.style.width = '150px'
+target.style.height = '150px'
 
-let width = parseInt(button.style.width.slice(0, 3))
-let height = parseInt(button.style.height.slice(0, 3))
+let width = parseInt(target.style.width.slice(0, 3))
+let height = parseInt(target.style.height.slice(0, 3))
 
-button.addEventListener("click", handleClick);
-container.addEventListener("click", handleMiss);
+gameContainer.addEventListener("click", handleMiss); // I can probably do this in the target hit function but fuck it
+target.addEventListener("click", antiCheat);
+
+function _0x2550() { const _0x240367 = ['6357815wmGgPL', '9270726ltyGWs', '8689270GanqHT', 'fullTime', '1125976HEzKcz', 'Impossible\x20CPS\x20of\x20', 'NumberFormat', '5090985deisKJ', 'clicks', 'reload', 'isTrusted', 'illegalClicks', '20558AdNfwi', 'en-US', '4EbeDYx', '5976096sNrVxu', '108MSgHNw', '\x20detected.', 'format', '9RMfswH']; _0x2550 = function () { return _0x240367; }; return _0x2550(); } function _0x37cd(_0x559092, _0x1a2bf8) { const _0x2550a7 = _0x2550(); return _0x37cd = function (_0x37cdec, _0x20f1f7) { _0x37cdec = _0x37cdec - 0x1e9; let _0x3f2c6f = _0x2550a7[_0x37cdec]; return _0x3f2c6f; }, _0x37cd(_0x559092, _0x1a2bf8); } (function (_0x583c4b, _0x2eb6cf) { const _0x3c2e29 = _0x37cd, _0x48dfef = _0x583c4b(); while (!![]) { try { const _0x456224 = parseInt(_0x3c2e29(0x1e9)) / 0x1 * (-parseInt(_0x3c2e29(0x1f6)) / 0x2) + -parseInt(_0x3c2e29(0x1f1)) / 0x3 + parseInt(_0x3c2e29(0x1f8)) / 0x4 * (parseInt(_0x3c2e29(0x1ea)) / 0x5) + parseInt(_0x3c2e29(0x1eb)) / 0x6 + -parseInt(_0x3c2e29(0x1f9)) / 0x7 + parseInt(_0x3c2e29(0x1ee)) / 0x8 * (parseInt(_0x3c2e29(0x1fa)) / 0x9) + -parseInt(_0x3c2e29(0x1ec)) / 0xa; if (_0x456224 === _0x2eb6cf) break; else _0x48dfef['push'](_0x48dfef['shift']()); } catch (_0x35e954) { _0x48dfef['push'](_0x48dfef['shift']()); } } }(_0x2550, 0xf28cf)); function antiCheat(_0x48b747) { const _0x5da99d = _0x37cd; let _0x2d5592 = new Intl[(_0x5da99d(0x1f0))](_0x5da99d(0x1f7), { 'maximumSignificantDigits': 0x4 })[_0x5da99d(0x1fc)](game[_0x5da99d(0x1f2)] / game[_0x5da99d(0x1ed)]); _0x2d5592 > 7.5 && (console['warn'](_0x5da99d(0x1ef) + _0x2d5592 + _0x5da99d(0x1fb)), game[_0x5da99d(0x1f2)] = 0x0), !_0x48b747[_0x5da99d(0x1f4)] ? game[_0x5da99d(0x1f5)]++ : handleClick(), game['illegalClicks'] > 0xa && setTimeout(function () { const _0x113204 = _0x5da99d; location[_0x113204(0x1f3)](); }, 0x0); }
 
 function handleMiss() {
-    missed += 1;
+    if (game['isActive']) {
+        game['misses'] += 1;
+        missAudio.play();
+    }
 }
 
 function handleClick() {
-    if (!started) {
-        started = true
-        targetProxy.started = 'true'
+    if (!game['isActive'] && time > 0) {
+        game['isActive'] = true
     }
 
-    clicks++;
+    game['clicks']++;
+    
 
-    if (count <= 1) {
-        cpsUnCap = parseFloat(clicks / time).toString()
+    if (time == 0) {
 
-        if (cpsUnCap.length > 3) {
-            cps = cpsUnCap.slice(0, -13) // Fucking floating point values.. 
-        } else {
-            cps = parseInt(cpsUnCap)
-        }
+        cps = new Intl.NumberFormat('en-US', { maximumSignificantDigits: 4 }).format(game['clicks'] / game['fullTime'])
+        cpm = new Intl.NumberFormat('en-US', { maximumSignificantDigits: 4 }).format(game['clicks'] / game['fullTime'] * 60)
+        accuracy = new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(game['clicks'] / (game['misses'] + game['clicks']) * 100)
 
-        button.removeEventListener("click", handleClick);
-        button.style.display = 'none'
-
-        accuracy = 100 - missed * 100 / 100;
-
-        if (accuracy < 0) {
-            accuracy = 0.01;
-        }
+        target.removeEventListener("click", handleClick);
+        target.style.display = 'none'
 
         timeContainer.innerText = `
-        You scored ${parseInt(clicks)} clicks in ${time} seconds.
+        You scored ${parseInt(game['clicks'])} clicks in ${game['fullTime']} seconds.
 
-        You missed ${missed} times.
+        You missed ${game['misses']} times.
 
         That gives you an accuracy rating of ${accuracy}%
 
-        as well as ~${cps} CPS or ~${(parseInt(cps * 60))} CPM!`
+        as well as ~${cps} CPS or ~${cpm} CPM!`
 
         var shareElement = document.createElement("button");
         var textBreaker = document.createElement("br");
@@ -92,43 +89,43 @@ function handleClick() {
         shareElement.addEventListener("click", function () {
 
         let clipboardData = `
-        **━━━━━━━━━━━━━━━━━━━━━━━━━━**\nI scored __${parseInt(clicks)}__ clicks in *${time}* seconds.\nI missed the target **${missed}** times.\nThat gives me an accuracy rating of **${accuracy}**%\nas well as ~**${cps}** CPS or ~**${(parseInt(cps * 60))}** CPM!\nTry for yourself at:\nhttps://north-dev.github.io/aim-tester/\n**━━━━━━━━━━━━━━━━━━━━━━━━━━**`
+        **━━━━━━━━━━━━━━━━━━━━━━━━━━**\nI scored __${parseInt(game['clicks'])}__ clicks in *${game['fullTime']}* seconds.\nI missed the target **${game['misses']}** times.\nThat gives me an accuracy rating of **${accuracy}**%\nas well as ~**${cps}** CPS or ~**${(parseInt(cps * 60))}** CPM!\nTry for yourself at:\nhttps://north-dev.github.io/aim-tester/\n**━━━━━━━━━━━━━━━━━━━━━━━━━━**`
 
             navigator.clipboard.writeText(clipboardData)
                 .then(function () {
-                    alert('Score copied to clipboard! (Formatted for discord)');
+                    alert('Score copied to clipboard!');
                 })
                 .catch(function (error) {
                     console.error(error);
-                    alert('Failed to copy score to clipboard! :/');
+                    console.error('Failed to copy score to clipboard! :/');
                 });
         });
 
         timeContainer.appendChild(textBreaker);
         timeContainer.appendChild(shareElement);
 
-        button.style.width = '800px';
-        button.style.height = '400px';
-        button.style.left = '10%'
-        button.style.top = '50%'
-        button.style.borderRadius = '0px'
-        button.style.backgroundColor = '#17BEBB';
+        target.style.width = '800px';
+        target.style.height = '400px';
+        target.style.left = '10%'
+        target.style.top = '50%'
+        target.style.borderRadius = '0px'
+        target.style.backgroundColor = '#17BEBB';
 
-        timeElement.innerText = `Time's Up!`
-
-        clearInterval(timer);
+        $("#timer").text(`Time's Up!`);
     }
 
     else {
-        button.style.width = `${width}px`
-        button.style.height = `${height}px`
-        button.innerText = `${clicks}`;
+        target.style.width = `${width}px`
+        target.style.height = `${height}px`
+
+        $("#clicks").text(`Your current score is ${game['clicks']}.`);
+    }
+    if (game['isActive']) {
+        hitAudio.play();
     }
 
-    audio.play();
-
-    button.style.left = `${Math.random(1, window.innerWidth) * 75}%`
-    button.style.top = `${Math.random(1, window.innerHeight) * 75}%`
+    target.style.left = `${Math.random(1, window.innerWidth) * 75}%`
+    target.style.top = `${Math.random(1, window.innerHeight) * 75}%`
 
     if (width && height > 100) {
         width--;

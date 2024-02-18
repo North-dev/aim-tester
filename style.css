@@ -21,12 +21,15 @@
 
 #timer {
     font-size: 48px;
-    margin-top: 50px;
+    margin-top: 10px;
 }
 
-button {
+#clicks {
+    font-size:24px;
+}
+
+div[name="target"],button {
     background-color: #17BEBB;
-    /* Green */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -39,7 +42,7 @@ button {
     border-radius: 8px;
 }
 
-button:hover {
+div[name="target"]:hover {
     background-color: #118684;
 }
 
@@ -48,12 +51,14 @@ button:hover {
     left:25%;
     top:25%;
 
-    width:50px;
-    height:50px;
+    width:75px;
+    height:75px;
 
     border-radius: 10000px;
 
-    font-size:50px;
+    font-size:24px;
+
+    text-align: center;
 }
 
 #finalScore {
