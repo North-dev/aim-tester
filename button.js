@@ -56,9 +56,15 @@ function handleMiss() {
     }
 }
 
+let timerElement = document.getElementById("timer")
+
 function handleClick() {
     if (!game['isActive'] && time > 0) {
         game['isActive'] = true
+
+        
+        timerElement.classList.remove("object")
+        timerElement.innerText = '30 SECONDS REMAINING'
     }
 
     game['clicks']++;
@@ -74,13 +80,11 @@ function handleClick() {
         target.style.display = 'none'
 
         timeContainer.innerText = `
-        You scored ${parseInt(game['clicks'])} clicks in ${game['fullTime']} seconds.
-
         You missed ${game['misses']} times.
 
         That gives you an accuracy rating of ${accuracy}%
 
-        as well as ~${cps} CPS or ~${cpm} CPM!`
+        as well as ${cps} CPS or ~${cpm} CPM!`
 
         var shareElement = document.createElement("button");
         var textBreaker = document.createElement("br");
@@ -118,7 +122,7 @@ function handleClick() {
         target.style.width = `${width}px`
         target.style.height = `${height}px`
 
-        $("#clicks").text(`Your current score is ${game['clicks']}.`);
+        $("#clicks").text(`Your score is ${game['clicks']}.`);
     }
     if (game['isActive']) {
         hitAudio.play();

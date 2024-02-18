@@ -7,43 +7,80 @@
     user-select: none;
 }
 
+@keyframes gentleAnimation {
+    0% {
+        transform: translateY(30%) rotate(0) scale(1);
+    }
+
+
+    50% {
+        transform: translateY(10%) rotate(1deg) scale(1.1);
+    }
+
+
+    100% {
+        transform: translateY(30%) rotate(0) scale(1);
+    }
+}
+
 #gameContainer {
+
     margin:-10px;
     position: fixed;
+
     width:1px;
     height:1px;
 
+    text-align: center;
     font-family: Arial, sans-serif;
+
     background-color: #2E282A;
     color: #FAD8D6;
-    text-align: center;
+
+    
 }
 
 #timer {
     font-size: 48px;
-    margin-top: 10px;
+
+    margin-top: 20px;
+
 }
 
-#clicks {
-    font-size:24px;
+.object {
+    font-size:36px;
+
+    left: 35%;
+    bottom: 90%;
+    position: absolute;
+
+    animation-name: gentleAnimation;
+    animation-duration: 2s;
+    animation-timing-function: ease;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
 }
 
-div[name="target"],button {
-    background-color: #17BEBB;
-    border: none;
+
+button {
     color: white;
+    background-color: #17BEBB;
+
+    border: none;
+
     padding: 15px 32px;
+
+    font-size: 16px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin-top: 20px;
-    cursor: pointer;
-    border-radius: 8px;
-}
 
-div[name="target"]:hover {
-    background-color: #118684;
+    display: inline-block;
+
+    margin-top: 20px;
+
+    cursor: pointer;
+    
+    border-radius: 8px;
 }
 
 #target {
@@ -53,14 +90,9 @@ div[name="target"]:hover {
 
     width:75px;
     height:75px;
-
-    border-radius: 10000px;
-
-    font-size:24px;
-
-    text-align: center;
+    
+    transition: left 0.15s ease, top 0.15s ease, width 0.5s ease, height 0.5s ease;
 }
 
-#finalScore {
-    font-size:24px;
-}
+#clicks {font-size: 24px;}
+#finalScore {font-size:24px;}
